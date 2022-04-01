@@ -34,4 +34,19 @@ public class WebSecurityConfiguration extends WebSecurityConfigurerAdapter {
         .and()
         .httpBasic();
   }
+
+  @Override
+  @Bean
+  protected UserDetailsService userDetailsService() {
+    UserDetails joseph = User.
+        builder()
+        .username("Joseph")
+        .password(passwordEncoder.encode("password"))
+        .roles("STUDENT") //  ROLLE_STUDENT
+        .build();
+
+    return new InMemoryUserDetailsManager(
+        joseph
+    );
+  }
 }
