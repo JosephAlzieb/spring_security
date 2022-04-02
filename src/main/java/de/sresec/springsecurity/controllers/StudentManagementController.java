@@ -20,13 +20,14 @@ public class StudentManagementController {
 //    hasRole('ROLE_') hasAnyRole('ROLE_') hasAuthority('permission') hasAnyAuthority('permission')
 
   @GetMapping
-  @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_ADMINTRAINEE')")
+  @PreAuthorize("hasAnyRole('ROLE_ADMIN')")
   public List<Student> getAllStudents() {
     System.out.println("getAllStudents");
     return STUDENTS;
   }
 
   @PostMapping
+  @PreAuthorize("hasAnyAuthority('student:write')")
   public void registerNewStudent(@RequestBody Student student) {
 //    STUDENTS.add(new Student((long) STUDENTS.size(),student.getName()));
     System.out.println("registerNewStudent");
@@ -34,12 +35,14 @@ public class StudentManagementController {
   }
 
   @DeleteMapping(path = "{studentId}")
+  @PreAuthorize("hasAnyAuthority('student:write')")
   public void deleteStudent(@PathVariable("studentId") Integer studentId) {
     System.out.println("deleteStudent");
     System.out.println(studentId);
   }
 
   @PutMapping(path = "{studentId}")
+  @PreAuthorize("hasAnyAuthority('student:write')")
   public void updateStudent(@PathVariable("studentId") Integer studentId,
       @RequestBody Student student) {
     System.out.println("updateStudent");
