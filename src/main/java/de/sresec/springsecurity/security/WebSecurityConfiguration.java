@@ -1,8 +1,13 @@
 package de.sresec.springsecurity.security;
 
+import static de.sresec.springsecurity.security.Permission.COURSE_WRITE;
+import static de.sresec.springsecurity.security.Role.ADMIN;
+import static de.sresec.springsecurity.security.Role.STUDENT;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
@@ -29,7 +34,11 @@ public class WebSecurityConfiguration extends WebSecurityConfigurerAdapter {
         .csrf().disable()
         .authorizeRequests()
         .antMatchers("/","/error", "/css/**", "/img/**").permitAll()
-        .antMatchers("/api/student/**").hasRole(Role.ADMIN.name())
+        .antMatchers("/api/student/**").hasRole(STUDENT.name())
+        .antMatchers(HttpMethod.DELETE,"/management/api/**").hasAuthority(COURSE_WRITE.getPermission())
+        .antMatchers(HttpMethod.POST, "/management/api/**").hasAuthority(COURSE_WRITE.getPermission())
+        .antMatchers(HttpMethod.PUT, "/management/api/**").hasAuthority(COURSE_WRITE.getPermission())
+        .antMatchers("/management/api/**").hasAnyRole(ADMIN.name())
         .anyRequest()
         .authenticated()
         .and()
@@ -50,7 +59,7 @@ public class WebSecurityConfiguration extends WebSecurityConfigurerAdapter {
         builder()
         .username("Dons")
         .password(passwordEncoder.encode("password123"))
-        .roles(Role.ADMIN.name()) //  ROLLE_STUDENT
+        .roles(ADMIN.name()) //  ROLLE_STUDENT
         .build();
 
     return new InMemoryUserDetailsManager(
