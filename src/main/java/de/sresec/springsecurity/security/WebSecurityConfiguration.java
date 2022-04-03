@@ -36,14 +36,10 @@ public class WebSecurityConfiguration extends WebSecurityConfigurerAdapter {
         .authorizeRequests()
         .antMatchers("/","/error", "/css/**", "/img/**").permitAll()
         .antMatchers("/api/student/**").hasRole(STUDENT.name())
-//        .antMatchers(HttpMethod.DELETE,"/management/api/**").hasAuthority(COURSE_WRITE.getPermission())
-//        .antMatchers(HttpMethod.POST, "/management/api/**").hasAuthority(COURSE_WRITE.getPermission())
-//        .antMatchers(HttpMethod.PUT, "/management/api/**").hasAuthority(COURSE_WRITE.getPermission())
-//        .antMatchers("/management/api/**").hasAnyRole(ADMIN.name())
         . anyRequest()
         .authenticated()
         .and()
-        .httpBasic();
+        .formLogin();
   }
 
   @Override
