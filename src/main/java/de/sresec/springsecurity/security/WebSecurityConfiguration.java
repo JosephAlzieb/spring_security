@@ -1,22 +1,19 @@
 package de.sresec.springsecurity.security;
 
-import static de.sresec.springsecurity.security.Permission.COURSE_WRITE;
-import static de.sresec.springsecurity.security.Role.ADMIN;
 import static de.sresec.springsecurity.security.Role.STUDENT;
 
 import java.util.concurrent.TimeUnit;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
+import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
-import org.springframework.security.core.userdetails.User;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
 @Configuration
@@ -25,10 +22,14 @@ import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 public class WebSecurityConfiguration extends WebSecurityConfigurerAdapter {
 
   private final PasswordEncoder passwordEncoder;
+  private final UserDetailsService userDetailsService;
 
   @Autowired
-  public WebSecurityConfiguration(PasswordEncoder passwordEncoder) {
+  public WebSecurityConfiguration(
+      PasswordEncoder passwordEncoder,
+      UserDetailsService userDetailsService) {
     this.passwordEncoder = passwordEncoder;
+    this.userDetailsService = userDetailsService;
   }
 
   @Override
@@ -54,8 +55,6 @@ public class WebSecurityConfiguration extends WebSecurityConfigurerAdapter {
         .and()
         .logout()
             .logoutUrl("/logout")
-        // DIE UNTERE ZEILE IST NUR DA WEIL CSRF-TOKEN DISABLED IST, BEI ENABLE SOLLTE SIE GELÖSCHT WERDEN,
-        // DENN WIR MÜSSEN DANN POST-METHODE VERWENDEN, UND NICHT GET..
             .logoutRequestMatcher(new AntPathRequestMatcher("/logout", "POST"))
             .clearAuthentication(true)
             .invalidateHttpSession(true)
@@ -64,25 +63,16 @@ public class WebSecurityConfiguration extends WebSecurityConfigurerAdapter {
   }
 
   @Override
-  @Bean
-  protected UserDetailsService userDetailsService() {
-    UserDetails joseph;
-    joseph = User.
-        builder()
-        .username("Joseph")
-        .password(passwordEncoder.encode("password"))
-        .authorities(STUDENT.getGrantedAuthorities())
-        .build();
-
-    UserDetails Dons = User.
-        builder()
-        .username("Dons")
-        .password(passwordEncoder.encode("password123"))
-        .authorities(ADMIN.getGrantedAuthorities())
-        .build();
-
-    return new InMemoryUserDetailsManager(
-        joseph,Dons
-    );
+  protected void configure(AuthenticationManagerBuilder auth) throws Exception {
+    auth.authenticationProvider(daoAuthenticationProvider());
   }
+
+  @Bean
+  public DaoAuthenticationProvider daoAuthenticationProvider(){
+    DaoAuthenticationProvider provider = new DaoAuthenticationProvider();
+    provider.setPasswordEncoder(passwordEncoder);
+    provider.setUserDetailsService(userDetailsService);
+    return provider;
+  }
+
 }
