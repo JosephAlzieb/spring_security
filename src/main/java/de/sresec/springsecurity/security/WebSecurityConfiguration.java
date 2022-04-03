@@ -39,7 +39,8 @@ public class WebSecurityConfiguration extends WebSecurityConfigurerAdapter {
         . anyRequest()
         .authenticated()
         .and()
-        .formLogin();
+        .formLogin()
+        .loginPage("/login").permitAll();
   }
 
   @Override
@@ -50,7 +51,6 @@ public class WebSecurityConfiguration extends WebSecurityConfigurerAdapter {
         builder()
         .username("Joseph")
         .password(passwordEncoder.encode("password"))
-//        .roles(Role.STUDENT.name()) //  ROLLE_STUDENT
         .authorities(STUDENT.getGrantedAuthorities())
         .build();
 
@@ -58,7 +58,6 @@ public class WebSecurityConfiguration extends WebSecurityConfigurerAdapter {
         builder()
         .username("Dons")
         .password(passwordEncoder.encode("password123"))
-//        .roles(ADMIN.name()) //  ROLLE_ADMIN
         .authorities(ADMIN.getGrantedAuthorities())
         .build();
 
