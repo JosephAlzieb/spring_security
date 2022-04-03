@@ -53,7 +53,7 @@ public class WebSecurityConfiguration extends WebSecurityConfigurerAdapter {
         .logoutUrl("/logout")
         // DIE UNTERE ZEILE IST NUR DA WEIL CSRF-TOKEN DISABLED IST, BEI ENABLE SOLLTE SIE GELÖSCHT WERDEN,
         // DENN WIR MÜSSEN DANN POST-METHODE VERWENDEN, UND NICHT GET..
-        .logoutRequestMatcher(new AntPathRequestMatcher("/logout", "GET"))
+        .logoutRequestMatcher(new AntPathRequestMatcher("/logout", "POST"))
         .clearAuthentication(true)
         .invalidateHttpSession(true)
         .deleteCookies("JSESSIONID","remember-me")
