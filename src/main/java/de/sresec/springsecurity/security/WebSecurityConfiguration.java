@@ -4,6 +4,7 @@ import static de.sresec.springsecurity.security.Permission.COURSE_WRITE;
 import static de.sresec.springsecurity.security.Role.ADMIN;
 import static de.sresec.springsecurity.security.Role.STUDENT;
 
+import java.util.concurrent.TimeUnit;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -40,7 +41,8 @@ public class WebSecurityConfiguration extends WebSecurityConfigurerAdapter {
         .authenticated()
         .and()
         .formLogin()
-        .loginPage("/login").permitAll();
+        .loginPage("/login").permitAll()
+        .defaultSuccessUrl("/courses",true);
   }
 
   @Override
