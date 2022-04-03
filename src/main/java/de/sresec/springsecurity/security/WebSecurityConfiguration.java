@@ -42,22 +42,25 @@ public class WebSecurityConfiguration extends WebSecurityConfigurerAdapter {
         .authenticated()
         .and()
         .formLogin()
-        .loginPage("/login").permitAll()
-        .defaultSuccessUrl("/courses",true)
+            .loginPage("/login").permitAll()
+            .defaultSuccessUrl("/courses",true)
+            .passwordParameter("password")
+            .usernameParameter("username")
         .and()
         .rememberMe()
             .tokenValiditySeconds((int) TimeUnit.DAYS.toSeconds(21))
             .key("verysecured")
+            .rememberMeParameter("remember-me")
         .and()
         .logout()
-        .logoutUrl("/logout")
+            .logoutUrl("/logout")
         // DIE UNTERE ZEILE IST NUR DA WEIL CSRF-TOKEN DISABLED IST, BEI ENABLE SOLLTE SIE GELÖSCHT WERDEN,
         // DENN WIR MÜSSEN DANN POST-METHODE VERWENDEN, UND NICHT GET..
-        .logoutRequestMatcher(new AntPathRequestMatcher("/logout", "POST"))
-        .clearAuthentication(true)
-        .invalidateHttpSession(true)
-        .deleteCookies("JSESSIONID","remember-me")
-        .logoutSuccessUrl("/login");
+            .logoutRequestMatcher(new AntPathRequestMatcher("/logout", "POST"))
+            .clearAuthentication(true)
+            .invalidateHttpSession(true)
+            .deleteCookies("JSESSIONID","remember-me")
+            .logoutSuccessUrl("/login");
   }
 
   @Override
