@@ -2,7 +2,7 @@ package de.sresec.springsecurity.security;
 
 import static de.sresec.springsecurity.security.Role.STUDENT;
 
-import java.util.concurrent.TimeUnit;
+import de.sresec.springsecurity.jwt.JwtUsernameAndPasswordAuthenticationFilter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -14,7 +14,6 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
 @Configuration
 @EnableWebSecurity
@@ -36,30 +35,12 @@ public class WebSecurityConfiguration extends WebSecurityConfigurerAdapter {
   protected void configure(HttpSecurity http) throws Exception {
     http
         .csrf().disable()
+        .addFilter(new JwtUsernameAndPasswordAuthenticationFilter(authenticationManager()))
         .authorizeRequests()
         .antMatchers("/","/error", "/css/**", "/img/**").permitAll()
         .antMatchers("/api/student/**").hasRole(STUDENT.name())
         . anyRequest()
-        .authenticated()
-        .and()
-        .formLogin()
-            .loginPage("/login").permitAll()
-            .defaultSuccessUrl("/courses",true)
-            .passwordParameter("password")
-            .usernameParameter("username")
-        .and()
-        .rememberMe()
-            .tokenValiditySeconds((int) TimeUnit.DAYS.toSeconds(21))
-            .key("verysecured")
-            .rememberMeParameter("remember-me")
-        .and()
-        .logout()
-            .logoutUrl("/logout")
-            .logoutRequestMatcher(new AntPathRequestMatcher("/logout", "POST"))
-            .clearAuthentication(true)
-            .invalidateHttpSession(true)
-            .deleteCookies("JSESSIONID","remember-me")
-            .logoutSuccessUrl("/login");
+        .authenticated();
   }
 
   @Override
