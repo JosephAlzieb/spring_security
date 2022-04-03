@@ -27,7 +27,7 @@ public class JwtUsernameAndPasswordAuthenticationFilter extends
   }
 
   /**
-   * User sends credential username und password.
+   * User sends principle = username und credential = password.
    * wenn alles valid ist, dann wird successfulAuthentication aufgerufen, um einen neuen Token zu generieren.
    * wenn der Token generiert ist, wird dieser in den Response-Header eingefügt, und der Response an den User geschickt.
    *
