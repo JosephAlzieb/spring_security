@@ -2,6 +2,7 @@ package de.sresec.springsecurity.security;
 
 import static de.sresec.springsecurity.security.Role.STUDENT;
 
+import de.sresec.springsecurity.jwt.JwtTokenVerifier;
 import de.sresec.springsecurity.jwt.JwtUsernameAndPasswordAuthenticationFilter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -36,6 +37,7 @@ public class WebSecurityConfiguration extends WebSecurityConfigurerAdapter {
     http
         .csrf().disable()
         .addFilter(new JwtUsernameAndPasswordAuthenticationFilter(authenticationManager()))
+        .addFilterAfter(new JwtTokenVerifier(), JwtUsernameAndPasswordAuthenticationFilter.class)
         .authorizeRequests()
         .antMatchers("/","/error", "/css/**", "/img/**").permitAll()
         .antMatchers("/api/student/**").hasRole(STUDENT.name())
